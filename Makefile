@@ -1,11 +1,11 @@
 GO_SPACE := $(CURDIR)
 GO_BIN_PATH := $(GO_SPACE)/build/bin
 GO_PLUGIN_PATH := $(GO_SPACE)/cmd
-RESOURCES := $(GO_SPACE)/internal/resources/notation*
 GOARCH := $(shell go env GOARCH)
 GOOS := $(shell go env GOOS)
 GO_BUILD := CGO_ENABLED=0 go build
 PLUGIN_NAME := notation-com.amazonaws.signer.notation.plugin
+GIT_HASH:= $(shell git rev-parse HEAD)
 VERSION := 1.0.0-${GIT_HASH}
 export GO_INSTALL_FLAGS := -ldflags "-X github.com/aws/aws-signer-notation-plugin/internal/version.Version=$(VERSION)"
 export T := ./cmd/... ./internal/... ./plugin/...
@@ -16,10 +16,6 @@ MOCKGEN_INSTALLED := $(shell which mockgen)
 build: | generate-mocks
 	@echo "Building for $(GOARCH) $(GOOS) agent"
 	cd $(GO_PLUGIN_PATH) && GOOS=$(GOOS) GOARCH=$(GOARCH) $(GO_BUILD) $(GO_INSTALL_FLAGS) -o $(GO_BIN_PATH)/$(PLUGIN_NAME)_$(GOOS)_$(GOARCH) $(GO_PLUGIN_PATH)
-
-.PHONY: clean
-clean: | clean-mocks
-	rm -rf $(GO_BIN_PATH) $(RESOURCES)
 
 .PHONY: generate-mocks
 generate-mocks:
