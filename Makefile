@@ -1,28 +1,15 @@
-GO_SPACE := $(CURDIR)
-GO_BIN_PATH := $(GO_SPACE)/build/bin
-GO_PLUGIN_PATH := $(GO_SPACE)/cmd
-GOARCH := $(shell go env GOARCH)
-GOOS := $(shell go env GOOS)
-GO_BUILD := CGO_ENABLED=0 go build
-PLUGIN_NAME := notation-com.amazonaws.signer.notation.plugin
-GIT_HASH:= $(shell git rev-parse HEAD)
-VERSION := 1.0.0-${GIT_HASH}
-export GO_INSTALL_FLAGS := -ldflags "-X github.com/aws/aws-signer-notation-plugin/internal/version.Version=$(VERSION)"
-export T := ./cmd/... ./internal/... ./plugin/...
-LDFLAGS := -s -w
-MOCKGEN_INSTALLED := $(shell which mockgen)
+BASE_DIR := $(dir $(realpath -s $(firstword $(MAKEFILE_LIST))))
 
 .PHONY: build
 build: | generate-mocks
-	@echo "Building for $(GOARCH) $(GOOS) agent"
-	cd $(GO_PLUGIN_PATH) && GOOS=$(GOOS) GOARCH=$(GOARCH) $(GO_BUILD) $(GO_INSTALL_FLAGS) -o $(GO_BIN_PATH)/$(PLUGIN_NAME)_$(GOOS)_$(GOARCH) $(GO_PLUGIN_PATH)
+	go build -o $(BASE_DIR)/build/bin/notation-com.amazonaws.signer.notation.plugin $(BASE_DIR)/cmd
 
 .PHONY: generate-mocks
 generate-mocks:
-ifndef MOCKGEN_INSTALLED
-	@echo "Installing mockgen as it is not present in the system..."
-	go install github.com/golang/mock/mockgen@v1.6.0
-endif
+	@if ! command -v mockgen &> /dev/null; then \
+		echo "Installing mockgen as it is not present in the system..."; \
+		go install github.com/golang/mock/mockgen@v1.6.0; \
+	fi
 	@echo "Generating Mocks..."
 	$(GOPATH)/bin/mockgen -package client -destination=./internal/client/mock_client.go "github.com/aws/aws-signer-notation-plugin/internal/client" Interface
 	@echo "Mocks generated successfully."
@@ -33,7 +20,7 @@ clean-mocks:
 
 .PHONY: test
 test: check-line-endings
-	go test -v -race -coverprofile=coverage.txt -covermode=atomic $(T)
+	go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
 
 .PHONY: check-line-endings
 check-line-endings:
