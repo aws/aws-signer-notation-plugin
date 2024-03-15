@@ -14,7 +14,7 @@
 BASE_DIR := $(dir $(realpath -s $(firstword $(MAKEFILE_LIST))))
 
 .PHONY: build
-build: | generate-mocks
+build: generate-mocks
 	go build -o $(BASE_DIR)/build/bin/notation-com.amazonaws.signer.notation.plugin $(BASE_DIR)/cmd
 
 .PHONY: generate-mocks
@@ -32,7 +32,7 @@ clean-mocks:
 	rm -rf ./internal/client/mock_client.go
 
 .PHONY: test
-test: check-line-endings
+test: generate-mocks check-line-endings
 	go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
 
 .PHONY: check-line-endings
