@@ -24,7 +24,7 @@ generate-mocks:
 		go install github.com/golang/mock/mockgen@v1.6.0; \
 	fi
 	@echo "Generating Mocks..."
-	$(GOPATH)/bin/mockgen -package client -destination=./internal/client/mock_client.go "github.com/aws/aws-signer-notation-plugin/internal/client" Interface
+	mockgen -package client -destination=./internal/client/mock_client.go "github.com/aws/aws-signer-notation-plugin/internal/client" Interface
 	@echo "Mocks generated successfully."
 
 .PHONY: clean-mocks
