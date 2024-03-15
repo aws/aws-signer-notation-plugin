@@ -27,6 +27,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 	"github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	"github.com/aws/aws-sdk-go-v2/service/signer"
+	"github.com/aws/smithy-go"
+
 	"github.com/notaryproject/notation-plugin-framework-go/plugin"
 )
 
