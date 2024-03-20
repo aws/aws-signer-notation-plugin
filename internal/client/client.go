@@ -84,7 +84,7 @@ func getLoadOptions(ctx context.Context, pluginConfig map[string]string) []func(
 	}
 
 	loadOptions = append(loadOptions, config.WithAPIOptions([]func(*middleware.Stack) error{
-		awsmiddleware.AddUserAgentKeyValue("aws-signer-caller", "NotationPlugin/"+version.Version),
+		awsmiddleware.AddUserAgentKeyValue("aws-signer-caller", "NotationPlugin/"+version.GetVersion()),
 	}))
 
 	if log.IsDebug() {
