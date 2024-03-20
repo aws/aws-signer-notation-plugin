@@ -20,6 +20,6 @@ import (
 )
 
 func TestGetVersion(t *testing.T) {
-	Version = "1.1.1"
+	version = "1.1.1"
 	assert.Equal(t, "1.1.1", GetVersion())
 }
