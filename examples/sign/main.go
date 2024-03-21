@@ -22,5 +22,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Sucessfully signed %s", ecrImageURI)
+	fmt.Printf("Sucessfully signed artifact: %s.", ecrImageURI)
 }

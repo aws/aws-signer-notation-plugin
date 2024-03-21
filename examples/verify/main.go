@@ -32,7 +32,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("sucessfully verified signature for %s \n", ecrImageURI)
+	fmt.Printf("Sucessfully verified signature associated with %s.\n", ecrImageURI)
 	for _, out := range outcome.VerificationResults {
 		fmt.Printf("  individual validation result: %+v \n", out)
 	}
