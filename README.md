@@ -1,4 +1,4 @@
-## AWS Signer plugin for Notation
+## AWS Signer Plugin for Notation
 
 [![Build Status](https://github.com/aws/aws-signer-notation-plugin/actions/workflows/build.yml/badge.svg?event=push&branch=main)](https://github.com/aws/aws-signer-notation-plugin/actions/workflows/build.yml?query=workflow%3Abuild+event%3Apush+branch%3Amain)
 [![Codecov](https://codecov.io/gh/aws/aws-signer-notation-plugin/branch/main/graph/badge.svg)](https://codecov.io/gh/aws/aws-signer-notation-plugin)
@@ -16,15 +16,14 @@ To use AWS Signer Notation plugin:
 
 ## Building from Source
 
-1. Install go. For more information, refer [golang documentation](https://golang.org/doc/install).
-2. The plugin uses go modules for dependency management. For more information, refer [Go Modules](https://github.com/golang/go/wiki/Modules).
+1. Install go. For more information, refer [go documentation](https://golang.org/doc/install).
+2. The plugin uses go modules for dependency management. For more information, refer [go modules](https://github.com/golang/go/wiki/Modules).
 3. Run `make build` to build the AWS Signer Notation plugin.
 4. Upon completion of the build process, the plugin executable will be created at `build/bin/notation-com.amazonaws.signer.notation.plugin`.
 
 Now you can use this plugin executable with notation CLI by using the following command:
-```
-notation plugin install --file ./build/bin/notation-com.amazonaws.signer.notation.plugin
-```
+
+`notation plugin install --file ./build/bin/notation-com.amazonaws.signer.notation.plugin`
 
 ### Make Targets
 The following targets are available. Each may be run with `make <target>`.
@@ -38,7 +37,7 @@ The following targets are available. Each may be run with `make <target>`.
 | `clean`          | removes build artifacts and auto generated mocks.                                     |
 
 ## Security disclosures
-If you think you’ve found a potential security issue, please do not post it in the Issues.  Instead, please follow the instructions [here](https://aws.amazon.com/security/vulnerability-reporting/) or email [AWS security directly](mailto:aws-security@amazon.com).
+To report a potential security issue, please do not create a new Issue in the repository. Instead, please report using the instructions [here](https://aws.amazon.com/security/vulnerability-reporting/) or email [AWS security directly](mailto:aws-security@amazon.com).
 
 ## License
 This project is licensed under the [Apache-2.0](LICENSE) License.
