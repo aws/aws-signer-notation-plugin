@@ -5,7 +5,7 @@ go 1.22.0
 require (
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.27.3
 	github.com/aws/aws-signer-notation-plugin v0.0.0-00010101000000-000000000000
-	github.com/notaryproject/notation-go v1.1.1-0.20240318175542-85df75983687
+	github.com/notaryproject/notation-go v1.1.1-0.20240321194021-b8136e2c8045
 	github.com/notaryproject/notation-plugin-framework-go v1.0.0
 )
 
@@ -38,7 +38,7 @@ require (
 	github.com/veraison/go-cose v1.1.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	golang.org/x/crypto v0.21.0 // indirect
-	golang.org/x/mod v0.15.0 // indirect
+	golang.org/x/mod v0.16.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 	oras.land/oras-go/v2 v2.4.0
 )
