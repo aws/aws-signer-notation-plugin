@@ -11,14 +11,20 @@
 # express or implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
-BASE_DIR := $(dir $(realpath -s $(firstword $(MAKEFILE_LIST))))
+.PHONY: help
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: build
-build: generate-mocks
-	go build -o $(BASE_DIR)/build/bin/notation-com.amazonaws.signer.notation.plugin $(BASE_DIR)/cmd
+build: test ## build the aws signer notation plugin
+	go build -o ./build/bin/notation-com.amazonaws.signer.notation.plugin ./cmd
+
+.PHONY: test
+test: generate-mocks ## run the unit tests
+	go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
 
 .PHONY: generate-mocks
-generate-mocks:
+generate-mocks: ## generate mocks required for unit tests
 	@if ! command -v mockgen &> /dev/null; then \
 		echo "Installing mockgen as it is not present in the system..."; \
 		go install github.com/golang/mock/mockgen@v1.6.0; \
@@ -27,18 +33,8 @@ generate-mocks:
 	mockgen -package client -destination=./internal/client/mock_client.go "github.com/aws/aws-signer-notation-plugin/internal/client" Interface
 	@echo "Mocks generated successfully."
 
-.PHONY: clean-mocks
-clean-mocks:
+.PHONY: clean
+clean: ## remove build artifacts and mocks
 	rm -rf ./internal/client/mock_client.go
-
-.PHONY: test
-test: generate-mocks check-line-endings
-	go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
-
-.PHONY: check-line-endings
-check-line-endings:
-	! find . -name "*.go" -type f -exec file "{}" ";" | grep CRLF
-
-.PHONY: fix-line-endings
-fix-line-endings:
-	find . -type f -name "*.go" -exec sed -i -e "s/\r//g" {} +
+	rm -rf ./build
+	git status --ignored --short | grep '^!! ' | sed 's/!! //' | xargs rm -rf
