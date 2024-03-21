@@ -22,7 +22,6 @@ To use AWS Signer Notation plugin:
 4. Upon completion of the build process, the plugin executable will be created at `build/bin/notation-com.amazonaws.signer.notation.plugin`.
 
 Now you can use this plugin executable with notation CLI by using the following command:
-
 ```
 notation plugin install --file ./build/bin/notation-com.amazonaws.signer.notation.plugin
 ```
