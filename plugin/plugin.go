@@ -25,6 +25,8 @@ import (
 	"github.com/notaryproject/notation-plugin-framework-go/plugin"
 )
 
+const Name = "com.amazonaws.signer.notation.plugin"
+
 // AWSSignerPlugin provides functionality for signing and verification in accordance with the NotaryProject AWSSignerPlugin contract.
 type AWSSignerPlugin struct {
 	awssigner client.Interface
@@ -58,7 +60,7 @@ func (sp *AWSSignerPlugin) VerifySignature(ctx context.Context, req *plugin.Veri
 // GetMetadata returns the metadata information of the plugin.
 func (sp *AWSSignerPlugin) GetMetadata(_ context.Context, _ *plugin.GetMetadataRequest) (*plugin.GetMetadataResponse, error) {
 	return &plugin.GetMetadataResponse{
-		Name:                      "com.amazonaws.signer.notation.plugin",
+		Name:                      Name,
 		Description:               "AWS Signer plugin for Notation",
 		Version:                   version.GetVersion(),
 		URL:                       "https://docs.aws.amazon.com/signer",
