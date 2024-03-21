@@ -12,12 +12,14 @@ import (
 	"github.com/notaryproject/notation-go/signer"
 )
 
-type notationSigner struct {
+// NotationSigner facilitates signing of OCI artifacts using notation and AWS Signer plugin
+type NotationSigner struct {
 	ecrClient    *ecr.Client
 	signerPlugin *awsplugin.AWSSignerPlugin
 }
 
-func newNotationSigner(ctx context.Context, region string) (*notationSigner, error) {
+// NewNotationSigner creates various AWS service clients and returns NotationSigner
+func NewNotationSigner(ctx context.Context, region string) (*NotationSigner, error) {
 	pl, err := utils.GetAWSSignerPlugin(ctx, region)
 	if err != nil {
 		return nil, err
@@ -26,13 +28,14 @@ func newNotationSigner(ctx context.Context, region string) (*notationSigner, err
 	if err != nil {
 		return nil, err
 	}
-	return &notationSigner{
+	return &NotationSigner{
 		ecrClient:    ecrClient,
 		signerPlugin: pl,
 	}, nil
 }
 
-func (n *notationSigner) sign(ctx context.Context, keyId, reference string, userMetadata map[string]string) error {
+// Sign function signs the given reference stored in registry and pushes signature back to registry.
+func (n *NotationSigner) Sign(ctx context.Context, keyId, reference string, userMetadata map[string]string) error {
 	ref, err := utils.ParseReference(reference)
 	if err != nil {
 		return err

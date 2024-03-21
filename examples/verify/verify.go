@@ -16,12 +16,14 @@ import (
 	"github.com/notaryproject/notation-plugin-framework-go/plugin"
 )
 
-type notationVerifier struct {
+// NotationVerifier facilitates signature verification for OCI artifacts using notation and AWS Signer plugin
+type NotationVerifier struct {
 	ecrClient    *ecr.Client
 	signerPlugin *awsplugin.AWSSignerPlugin
 }
 
-func newNotationVerifier(ctx context.Context, region string) (*notationVerifier, error) {
+// NewNotationVerifier creates various AWS service clients and returns NotationVerifier
+func NewNotationVerifier(ctx context.Context, region string) (*NotationVerifier, error) {
 	pl, err := utils.GetAWSSignerPlugin(ctx, region)
 	if err != nil {
 		return nil, err
@@ -30,13 +32,14 @@ func newNotationVerifier(ctx context.Context, region string) (*notationVerifier,
 	if err != nil {
 		return nil, err
 	}
-	return &notationVerifier{
+	return &NotationVerifier{
 		ecrClient:    ecrClient,
 		signerPlugin: pl,
 	}, nil
 }
 
-func (n *notationVerifier) verify(ctx context.Context, reference string, trustedRoots []*x509.Certificate, tPolicy *trustpolicy.Document, userMetadata map[string]string) (*notation.VerificationOutcome, error) {
+// The Verify function verifies the signature stored in the registry against the provided truststore and trust policy using the Notation and AWS Signer plugin
+func (n *NotationVerifier) Verify(ctx context.Context, reference string, trustedRoots []*x509.Certificate, tPolicy *trustpolicy.Document, userMetadata map[string]string) (*notation.VerificationOutcome, error) {
 	ref, err := utils.ParseReference(reference)
 	if err != nil {
 		return nil, err
@@ -66,7 +69,8 @@ func (n *notationVerifier) verify(ctx context.Context, reference string, trusted
 	return outcome[len(outcome)-1], nil
 }
 
-// customTrustStore returns AWS Signer root cert.
+// customTrustStore implements truststore.X509TrustStore and returns the trusted certificates for a given trust-store.
+// This implementation currently returns only AWS Signer trusted root but can be extended to support multiple trust-stores.
 type customTrustStore struct {
 	certs []*x509.Certificate
 }
@@ -75,7 +79,8 @@ func (ts *customTrustStore) GetCertificates(_ context.Context, _ truststore.Type
 	return ts.certs, nil
 }
 
-// customPluginManager manages plugins installed on the system.
+// customPluginManager implements plugin.Manager.
+// This implementation currently supports AWS Signer plugin but can be extended to support any plugin.
 type customPluginManager struct {
 	awsPlugin *awsplugin.AWSSignerPlugin
 }

@@ -15,13 +15,16 @@ import (
 	notationregistry "github.com/notaryproject/notation-go/registry"
 )
 
-type ecrRepoPassword struct {
+type repoAndExpiry struct {
 	repo   notationregistry.Repository
 	expiry time.Time
 }
 
-var credentialCache = map[string]ecrRepoPassword{}
+// credentialCache is unbounded cache used to store notationregistry.Repository.
+// The cache is required since Amazon ECR credentials expire after 12 hours.
+var credentialCache = map[string]repoAndExpiry{}
 
+// GetECRClient returns ecr client for give region.
 func GetECRClient(ctx context.Context, region string) (*ecr.Client, error) {
 	awsConfig, err := config.LoadDefaultConfig(ctx, config.WithRegion(region))
 	if err != nil {
@@ -31,6 +34,7 @@ func GetECRClient(ctx context.Context, region string) (*ecr.Client, error) {
 	return ecr.NewFromConfig(awsConfig), nil
 }
 
+// GetNotationRepository creates notationregistry.Repository required to access artifacts in Amazon ECR for sign and verify operations.
 func GetNotationRepository(ctx context.Context, client *ecr.Client, ref registry.Reference) (notationregistry.Repository, error) {
 	repoPass, ok := credentialCache[ref.Host()]
 	// Check if Repository object exists in cache and is not expired
@@ -58,7 +62,7 @@ func GetNotationRepository(ctx context.Context, client *ecr.Client, ref registry
 	remoteRepo.SetReferrersCapability(false)
 
 	notationRepo := notationregistry.NewRepository(remoteRepo)
-	credentialCache[ref.Host()] = ecrRepoPassword{
+	credentialCache[ref.Host()] = repoAndExpiry{
 		repo:   notationRepo,
 		expiry: *expiry,
 	}

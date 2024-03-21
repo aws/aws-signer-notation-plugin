@@ -44,3 +44,5 @@ require (
 )
 
 replace github.com/aws/aws-signer-notation-plugin => ../
+
+replace github.com/notaryproject/notation-go => /Volumes/workplace/notaryproject/notation-go

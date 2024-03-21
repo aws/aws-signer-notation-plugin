@@ -15,8 +15,11 @@ import (
 	awsplugin "github.com/aws/aws-signer-notation-plugin/plugin"
 )
 
+// awsSignerRootURL is the url of AWS Signer's root certificate. The URL is copied from AWS Signer's documentation
+// https://docs.aws.amazon.com/signer/latest/developerguide/image-signing-prerequisites.html
 const awsSignerRootURL = "https://d2hvyiie56hcat.cloudfront.net/aws-signer-notation-root.cert"
 
+// Cache to store AWS Signer's Root Certificate so that we dont need to fetch root certificate for every signature verification.
 var awsSignerRootCache *x509.Certificate
 
 func ParseReference(reference string) (registry.Reference, error) {
@@ -34,6 +37,7 @@ func ParseReference(reference string) (registry.Reference, error) {
 	return ref, nil
 }
 
+// GetAWSSignerPlugin returns the AWS Signer's Notation plugin
 func GetAWSSignerPlugin(ctx context.Context, region string) (*awsplugin.AWSSignerPlugin, error) {
 	awsConfig, err := config.LoadDefaultConfig(ctx, config.WithRegion(region))
 	if err != nil {
@@ -43,6 +47,7 @@ func GetAWSSignerPlugin(ctx context.Context, region string) (*awsplugin.AWSSigne
 	return awsplugin.NewAWSSigner(signer.NewFromConfig(awsConfig)), nil
 }
 
+// GetAWSSignerRootCert returns the AWS Signer's root certificate
 func GetAWSSignerRootCert() (*x509.Certificate, error) {
 	if awsSignerRootCache != nil {
 		return awsSignerRootCache, nil
