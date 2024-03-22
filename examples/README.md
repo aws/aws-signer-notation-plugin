@@ -4,5 +4,4 @@ This package contains examples for using AWS Signer Notation plugin as library w
 * [Sign Example](./sign) 
 * [Verify Example](./verify)
 
-> [!WARNING]
-These examples are intended for non-production use only and are __NOT supported for production__ environments.
+These examples are intended for __non-production use only__.
