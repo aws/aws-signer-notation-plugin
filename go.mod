@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.25.3
 	github.com/aws/aws-sdk-go-v2/config v1.27.7
 	github.com/aws/aws-sdk-go-v2/service/signer v1.22.3
-	github.com/aws/smithy-go v1.20.1
+	github.com/aws/smithy-go v1.20.2
 	github.com/golang/mock v1.6.0
 	github.com/notaryproject/notation-plugin-framework-go v1.0.0
 	github.com/stretchr/testify v1.9.0
