@@ -3,7 +3,7 @@ go 1.21
 module github.com/aws/aws-signer-notation-plugin
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.30.1
+	github.com/aws/aws-sdk-go-v2 v1.30.3
 	github.com/aws/aws-sdk-go-v2/config v1.27.24
 	github.com/aws/aws-sdk-go-v2/service/signer v1.24.1
 	github.com/aws/smithy-go v1.20.3
