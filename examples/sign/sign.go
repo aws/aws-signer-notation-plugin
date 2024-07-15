@@ -62,7 +62,7 @@ func (n *NotationSigner) Sign(ctx context.Context, keyId, reference string, user
 	opts := notation.SignOptions{
 		SignerSignOptions: notation.SignerSignOptions{
 			SignatureMediaType: jws.MediaTypeEnvelope,
-			SigningAgent:       "zop-zap",
+			SigningAgent:       "aws-signer-notation-go-example/1.0",
 		},
 		ArtifactReference: reference,
 		UserMetadata:      userMetadata,
