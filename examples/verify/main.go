@@ -16,32 +16,36 @@ package main
 import (
 	"context"
 	"crypto/x509"
+	"encoding/pem"
 	"fmt"
-
-	"example/utils"
+	"io"
+	"net/http"
 
 	"github.com/notaryproject/notation-go/verifier/trustpolicy"
 )
 
+// awsSignerRootURL is the url of AWS Signer's root certificate. The URL is copied from AWS Signer's documentation
+// https://docs.aws.amazon.com/signer/latest/developerguide/image-signing-prerequisites.html
+const awsSignerRootURL = "https://d2hvyiie56hcat.cloudfront.net/aws-signer-notation-root.cert"
+
+// Downloads and caches AWS Signer's Root Certificate required for signature verification.
+var awsSignerRoot = getAWSSignerRootCert()
+
 func main() {
 	// variable required for verification
 	ctx := context.Background()
-	awsRegion := "us-west-2"
-	ecrImageURI := "111122223333.dkr.ecr.region.amazonaws.com/curl@sha256:ca78e5f730f9a789ef8c63bb55275ac12dfb9e8099e6EXAMPLE"
-	awsSignerProfileArn := "arn:aws:signer:region:111122223333:/signing-profiles/ecr_signing_profile"
-	userMetadata := map[string]string{"buildId": "101"}
+	awsRegion := "us-west-2"                                                                   // AWS region where you created signing profile and ECR image.
+	ecrImageURI := "111122223333.dkr.ecr.region.amazonaws.com/curl@sha256:EXAMPLEHASH"         // ECR image URI
+	awsSignerProfileArn := "arn:aws:signer:region:111122223333:/signing-profiles/profile_name" // AWS Signer's signing profile ARN
+	userMetadata := map[string]string{"buildId": "101"}                                        // Optional, add if you want to verify metadata in the signature, else use nil
 	tPolicy := getTrustPolicy(awsSignerProfileArn)
-	awsSignerRootCert, err := utils.GetAWSSignerRootCert()
-	if err != nil {
-		panic(err)
-	}
 
 	// signature verification
 	verifier, err := NewNotationVerifier(ctx, awsRegion)
 	if err != nil {
 		panic(err)
 	}
-	outcome, err := verifier.Verify(context.Background(), ecrImageURI, []*x509.Certificate{awsSignerRootCert}, tPolicy, userMetadata)
+	outcome, err := verifier.Verify(context.Background(), ecrImageURI, []*x509.Certificate{awsSignerRoot}, tPolicy, userMetadata)
 	if err != nil {
 		panic(err)
 	}
@@ -66,5 +70,31 @@ func getTrustPolicy(awsSignerProfileArn string) *trustpolicy.Document {
 				TrustedIdentities: []string{awsSignerProfileArn},
 			},
 		},
+	}
+}
+
+// getAWSSignerRootCert returns the AWS Signer's root certificate
+func getAWSSignerRootCert() *x509.Certificate {
+	resp, err := http.Get(awsSignerRootURL)
+	if err != nil {
+		panic(fmt.Sprintf("failed to get AWS Signer's root certificate: %s", err.Error())) // handle error
+	}
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(fmt.Sprintf("failed to get AWS Signer's root certificate: %s", err.Error())) // handle error
+	}
+
+	block, _ := pem.Decode(data)
+	switch block.Type {
+	case "CERTIFICATE":
+		cert, err := x509.ParseCertificate(block.Bytes)
+		if err != nil {
+			panic(fmt.Sprintf("failed to parse AWS Signer's root certificate: %s", err.Error())) // handle error
+		}
+		return cert
+	default:
+		panic(fmt.Sprintf("failed to parse AWS Signer's root certificate: unsupported certificate type :%s", block.Type)) // handle error
 	}
 }

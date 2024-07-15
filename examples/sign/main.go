@@ -21,10 +21,10 @@ import (
 func main() {
 	// variable required for signing
 	ctx := context.Background()
-	awsRegion := "us-west-2"
-	ecrImageURI := "111122223333.dkr.ecr.region.amazonaws.com/curl@sha256:ca78e5f730f9a789ef8c63bb55275ac12dfb9e8099e6EXAMPLE"
-	awsSignerProfileArn := "arn:aws:signer:region:111122223333:/signing-profiles/ecr_signing_profile"
-	userMetadata := map[string]string{"buildId": "101"}
+	awsRegion := "us-west-2"                                                                   // AWS region where you created signing profile and ECR image.
+	ecrImageURI := "111122223333.dkr.ecr.region.amazonaws.com/curl@sha256:EXAMPLEHASH"         // ECR image URI
+	awsSignerProfileArn := "arn:aws:signer:region:111122223333:/signing-profiles/profile_name" // AWS Signer's signing profile ARN
+	userMetadata := map[string]string{"buildId": "101"}                                        // Optional, add if you want to add metadata to the signature, else use nil
 
 	// signing
 	signer, err := NewNotationSigner(ctx, awsRegion)

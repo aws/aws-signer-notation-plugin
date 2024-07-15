@@ -68,7 +68,7 @@ func (n *NotationSigner) Sign(ctx context.Context, keyId, reference string, user
 		UserMetadata:      userMetadata,
 	}
 
-	sigSigner, err := signer.NewPluginSigner(n.signerPlugin, keyId, map[string]string{})
+	sigSigner, err := signer.NewFromPlugin(n.signerPlugin, keyId, map[string]string{})
 	if err != nil {
 		return err
 	}
