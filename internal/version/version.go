@@ -14,7 +14,7 @@
 // Package version provides utility methods for AWS Signer's plugin version.
 package version
 
-var version = "1.0.300"
+var version = "1.0.350"
 
 // GetVersion returns the plugin version in Semantic Versioning 2.0.0 format.
 func GetVersion() string {
