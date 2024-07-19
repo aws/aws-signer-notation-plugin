@@ -136,6 +136,12 @@ func TestDescribeKey_Error(t *testing.T) {
 	assert.Error(t, err, "expected UnsupportedError but not found")
 }
 
+func TestGetSignerClientIfNotPresent(t *testing.T) {
+	signerPlugin := AWSSignerPlugin{}
+	err := signerPlugin.setSignerClientIfNotPresent(context.TODO(), nil)
+	assert.NoError(t, err)
+}
+
 func convertCert(certs ...string) [][]byte {
 	var o [][]byte
 	for _, cert := range certs {
