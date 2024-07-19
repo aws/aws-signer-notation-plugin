@@ -3,7 +3,7 @@ module example
 go 1.22.0
 
 require (
-	github.com/aws/aws-sdk-go-v2/service/ecr v1.27.3
+	github.com/aws/aws-sdk-go-v2/service/ecr v1.30.3
 	github.com/aws/aws-signer-notation-plugin v0.0.0-00010101000000-000000000000
 	github.com/notaryproject/notation-go v1.1.1
 	github.com/notaryproject/notation-plugin-framework-go v1.0.0
@@ -20,7 +20,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.17 // indirect
-	github.com/aws/aws-sdk-go-v2/service/signer v1.24.1
+	github.com/aws/aws-sdk-go-v2/service/signer v1.24.3
 	github.com/aws/aws-sdk-go-v2/service/sso v1.22.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.26.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.30.3 // indirect
