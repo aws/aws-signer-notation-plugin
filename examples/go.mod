@@ -9,6 +9,8 @@ require (
 	github.com/notaryproject/notation-plugin-framework-go v1.0.0
 )
 
+require github.com/notaryproject/tspclient-go v0.2.0 // indirect
+
 require (
 	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.30.3 // indirect
@@ -30,10 +32,10 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.1-0.20220621161143-b0104c826a24 // indirect
-	github.com/notaryproject/notation-core-go v1.0.3
+	github.com/notaryproject/notation-core-go v1.1.0
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
-	golang.org/x/crypto v0.23.0 // indirect
+	golang.org/x/crypto v0.26.0 // indirect
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 	oras.land/oras-go/v2 v2.5.0
