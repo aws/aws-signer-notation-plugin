@@ -34,7 +34,7 @@ require (
 	github.com/aws/smithy-go v1.22.0 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.5 // indirect
 	github.com/go-ldap/ldap/v3 v3.4.8 // indirect; indirectgo get -u
-	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.1-0.20220621161143-b0104c826a24 // indirect
 	github.com/notaryproject/notation-core-go v1.1.0
