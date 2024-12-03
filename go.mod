@@ -1,4 +1,4 @@
-go 1.21
+go 1.22.0
 
 module github.com/aws/aws-signer-notation-plugin
 
