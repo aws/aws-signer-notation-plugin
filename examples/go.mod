@@ -3,7 +3,7 @@ module example
 go 1.22.0
 
 require (
-	github.com/aws/aws-sdk-go-v2/service/ecr v1.32.4
+	github.com/aws/aws-sdk-go-v2/service/ecr v1.44.0
 	github.com/aws/aws-signer-notation-plugin v0.0.0-00010101000000-000000000000
 	github.com/notaryproject/notation-go v1.3.1
 	github.com/notaryproject/notation-plugin-framework-go v1.0.0
@@ -36,7 +36,6 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.10 // indirect; indirectgo get -u
 	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/jmespath/go-jmespath v0.4.1-0.20220621161143-b0104c826a24 // indirect
 	github.com/notaryproject/notation-core-go v1.2.0
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
