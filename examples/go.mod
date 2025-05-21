@@ -41,8 +41,8 @@ require (
 	github.com/opencontainers/image-spec v1.1.1 // indirect
 	golang.org/x/crypto v0.38.0 // indirect
 	golang.org/x/mod v0.24.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
-	oras.land/oras-go/v2 v2.5.0
+	golang.org/x/sync v0.14.0 // indirect
+	oras.land/oras-go/v2 v2.6.0
 )
 
 replace github.com/aws/aws-signer-notation-plugin => ../
