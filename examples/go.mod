@@ -3,7 +3,7 @@ module example
 go 1.24.0
 
 require (
-	github.com/aws/aws-sdk-go-v2/service/ecr v1.54.4
+	github.com/aws/aws-sdk-go-v2/service/ecr v1.55.0
 	github.com/aws/aws-signer-notation-plugin v0.0.0-00010101000000-000000000000
 	github.com/notaryproject/notation-go v1.3.2
 	github.com/notaryproject/notation-plugin-framework-go v1.0.0
