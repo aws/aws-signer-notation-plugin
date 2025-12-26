@@ -36,6 +36,16 @@ The following targets are available. Each may be run with `make <target>`.
 | `generate-mocks` | generates the mocks required for unit tests                                           |
 | `clean`          | removes build artifacts and auto generated mocks.                                     |
 
+## Troubleshooting for Local Plugin Builds
+
+If you encounter `gomock` import path errors during `make build`, ensure you're using the correct `mockgen` version and import path:
+
+- Replace all instances of `github.com/golang/mock/gomock` with `go.uber.org/mock/gomock`
+- You can use this command:
+
+```bash
+find . -name '*.go' -exec sed -i '' 's|github.com/golang/mock/gomock|go.uber.org/mock/gomock|g' {} +
+
 ## Security disclosures
 To report a potential security issue, please do not create a new Issue in the repository. Instead, please report using the instructions [here](https://aws.amazon.com/security/vulnerability-reporting/) or email [AWS security directly](mailto:aws-security@amazon.com).
 

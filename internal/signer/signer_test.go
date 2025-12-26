@@ -24,7 +24,7 @@ import (
 	"github.com/aws/aws-signer-notation-plugin/internal/client"
 	"github.com/aws/smithy-go"
 	smithyhttp "github.com/aws/smithy-go/transport/http"
-	"github.com/golang/mock/gomock"
+	"go.uber.org/mock/gomock"
 	"github.com/notaryproject/notation-plugin-framework-go/plugin"
 	"github.com/stretchr/testify/assert"
 )

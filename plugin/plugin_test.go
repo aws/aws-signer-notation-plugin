@@ -22,7 +22,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/service/signer"
 	"github.com/aws/aws-signer-notation-plugin/internal/client"
-	"github.com/golang/mock/gomock"
+	"go.uber.org/mock/gomock"
 	"github.com/notaryproject/notation-plugin-framework-go/plugin"
 	"github.com/stretchr/testify/assert"
 )
