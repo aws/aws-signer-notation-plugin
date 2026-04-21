@@ -17,7 +17,7 @@ help:
 
 .PHONY: build
 build: test ## build the aws signer notation plugin
-	go build -o ./build/bin/notation-com.amazonaws.signer.notation.plugin ./cmd
+	go build -buildmode=pie -o ./build/bin/notation-com.amazonaws.signer.notation.plugin ./cmd
 
 .PHONY: test
 test: generate-mocks ## run the unit tests
