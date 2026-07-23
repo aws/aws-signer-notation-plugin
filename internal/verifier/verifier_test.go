@@ -33,6 +33,8 @@ import (
 const (
 	testProfileArn        = "arn:aws:signer:us-west-2:000000000000:/signing-profiles/NotaryPluginIntegProfile"
 	testProfileVersionArn = testProfileArn + "/OF8IVUsPJq"
+	testAliasedProfileArn = "arn:aws:signer:us-west-2::/aliased-signing-profiles/db4a39f3-f858-4b92-8623-8b4c41649972"
+	testAliasArn          = "arn:aws:signer:::/aliases/com.amazonaws.aliastest"
 	testJobArn            = "arn:aws:signer:us-west-2:000000000000:/signing-jobs/97af3947-e7b2-4533-8d9d-6741156f0b79"
 	testCertificate1      = `-----BEGIN CERTIFICATE-----
 MIIDQDCCAiigAwIBAgIRAMH0R+Owv6zXRzRJgjkWUPEwDQYJKoZIhvcNAQELBQAw
@@ -90,6 +92,92 @@ func TestVerify(t *testing.T) {
 	actualResponse, err := New(mockSignerClient).Verify(context.TODO(), request)
 	expectedResponse := getVerifySigResponse(true, testTISuccessReason, true, reasonNotRevoked)
 	validateResponse(t, expectedResponse, *actualResponse, err)
+}
+
+func TestVerify_SigningProfileAliasProcessed(t *testing.T) {
+	// A signature carrying signingProfileAlias must report it as a processed attribute.
+	mockSignerClient, mockCtrl := getMockClient(nil, &signer.GetRevocationStatusOutput{}, nil, t)
+	defer mockCtrl.Finish()
+
+	aliasArn := "arn:aws:signer:us-west-2::/aliases/com.amazonaws.aliastest"
+	request := mockVerifySigRequest()
+	request.TrustPolicy.TrustedIdentities = []string{testProfileVersionArn}
+	request.Signature.CriticalAttributes.ExtendedAttributes[attrSigningProfileAlias] = aliasArn
+
+	actualResponse, err := New(mockSignerClient).Verify(context.TODO(), request)
+	if err != nil {
+		t.Fatalf("Unexpected error: %+v", err)
+	}
+	assert.Contains(t, actualResponse.ProcessedAttributes, attrSigningProfileAlias,
+		"signingProfileAlias must be reported as a processed attribute when present")
+}
+
+func TestVerify_AliasedTrustedIdentity(t *testing.T) {
+	// Trusting the aliased resource ARN should match a signature signed under it.
+	mockSignerClient, mockCtrl := getMockClient(nil, &signer.GetRevocationStatusOutput{}, nil, t)
+	defer mockCtrl.Finish()
+
+	request := mockVerifySigRequest()
+	request.Signature.CriticalAttributes.ExtendedAttributes[attrSigningProfileVersion] = testAliasedProfileArn
+	request.TrustPolicy.TrustedIdentities = []string{testAliasedProfileArn}
+
+	actualResponse, err := New(mockSignerClient).Verify(context.TODO(), request)
+	if err != nil {
+		t.Fatalf("Unexpected error: %+v", err)
+	}
+	ti := actualResponse.VerificationResults[plugin.CapabilityTrustedIdentityVerifier]
+	assert.True(t, ti.Success, "aliased ARN in trustedIdentities should match the aliased signingProfileVersion")
+}
+
+func TestVerify_AliasedTrustedIdentity_Mismatch(t *testing.T) {
+	// Trusting a different aliased ARN than the signature's must not match.
+	mockSignerClient, mockCtrl := getMockClient(nil, &signer.GetRevocationStatusOutput{}, nil, t)
+	defer mockCtrl.Finish()
+
+	request := mockVerifySigRequest()
+	request.Signature.CriticalAttributes.ExtendedAttributes[attrSigningProfileVersion] = testAliasedProfileArn
+	request.TrustPolicy.TrustedIdentities = []string{"arn:aws:signer:us-west-2::/aliased-signing-profiles/00000000-0000-0000-0000-000000000000"}
+
+	actualResponse, err := New(mockSignerClient).Verify(context.TODO(), request)
+	if err != nil {
+		t.Fatalf("Unexpected error: %+v", err)
+	}
+	ti := actualResponse.VerificationResults[plugin.CapabilityTrustedIdentityVerifier]
+	assert.False(t, ti.Success, "a non-matching aliased ARN must not be trusted")
+}
+
+func TestVerify_AliasTrustedIdentity(t *testing.T) {
+	// Trusting the alias ARN should match the signature's signingProfileAlias.
+	mockSignerClient, mockCtrl := getMockClient(nil, &signer.GetRevocationStatusOutput{}, nil, t)
+	defer mockCtrl.Finish()
+
+	request := mockVerifySigRequest()
+	request.Signature.CriticalAttributes.ExtendedAttributes[attrSigningProfileAlias] = testAliasArn
+	request.TrustPolicy.TrustedIdentities = []string{testAliasArn}
+
+	actualResponse, err := New(mockSignerClient).Verify(context.TODO(), request)
+	if err != nil {
+		t.Fatalf("Unexpected error: %+v", err)
+	}
+	ti := actualResponse.VerificationResults[plugin.CapabilityTrustedIdentityVerifier]
+	assert.True(t, ti.Success, "alias ARN in trustedIdentities should match the signature's signingProfileAlias")
+}
+
+func TestVerify_AliasTrustedIdentity_Mismatch(t *testing.T) {
+	// Trusting a different alias than the signature carries must not match.
+	mockSignerClient, mockCtrl := getMockClient(nil, &signer.GetRevocationStatusOutput{}, nil, t)
+	defer mockCtrl.Finish()
+
+	request := mockVerifySigRequest()
+	request.Signature.CriticalAttributes.ExtendedAttributes[attrSigningProfileAlias] = testAliasArn
+	request.TrustPolicy.TrustedIdentities = []string{"arn:aws:signer:::/aliases/com.amazonaws.someotheralias"}
+
+	actualResponse, err := New(mockSignerClient).Verify(context.TODO(), request)
+	if err != nil {
+		t.Fatalf("Unexpected error: %+v", err)
+	}
+	ti := actualResponse.VerificationResults[plugin.CapabilityTrustedIdentityVerifier]
+	assert.False(t, ti.Success, "a non-matching alias must not be trusted")
 }
 
 func TestVerify_ValidTrustedIdentity(t *testing.T) {

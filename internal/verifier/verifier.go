@@ -38,6 +38,7 @@ const (
 
 	attrSigningProfileVersion = "com.amazonaws.signer.signingProfileVersion"
 	attrSigningJob            = "com.amazonaws.signer.signingJob"
+	attrSigningProfileAlias   = "com.amazonaws.signer.signingProfileAlias"
 	signingSchemeAuthority    = "notary.x509.signingAuthority"
 
 	errMsgCertificateParse = "unable to parse certificates in certificate chain."
@@ -100,6 +101,10 @@ func (v *Verifier) Verify(ctx context.Context, request *plugin.VerifySignatureRe
 	// return both of them as processed even if the revocation call was skipped
 	response.ProcessedAttributes = slices.AppendIfNotPresent(response.ProcessedAttributes, attrSigningProfileVersion)
 	response.ProcessedAttributes = slices.AppendIfNotPresent(response.ProcessedAttributes, attrSigningJob)
+	// Mark signingProfileAlias processed when present, else Notation fails closed on it.
+	if _, ok := request.Signature.CriticalAttributes.ExtendedAttributes[attrSigningProfileAlias]; ok {
+		response.ProcessedAttributes = slices.AppendIfNotPresent(response.ProcessedAttributes, attrSigningProfileAlias)
+	}
 	return &response, nil
 }
 
@@ -136,12 +141,8 @@ func validateTrustedIdentity(request *plugin.VerifySignatureRequest, response *p
 		return err
 	}
 
-	var trustedArns []string
-	for _, identity := range request.TrustPolicy.TrustedIdentities {
-		if _, ok := isSigningProfileArn(identity); ok {
-			trustedArns = append(trustedArns, identity)
-		}
-	}
+	// Alias ARN of the signing profile; empty for non-aliased profiles.
+	signatureAlias, _ := getValueAsString(request.Signature.CriticalAttributes.ExtendedAttributes, attrSigningProfileAlias)
 
 	result := &plugin.VerificationResult{
 		Success: false,
@@ -150,9 +151,19 @@ func validateTrustedIdentity(request *plugin.VerifySignatureRequest, response *p
 
 	var profileMatch bool
 	for _, identity := range request.TrustPolicy.TrustedIdentities {
-		if arn, ok := isSigningProfileArn(identity); ok {
+		// Match a trusted alias ARN against the signature's alias.
+		if isAliasArn(identity) {
+			if signatureAlias != "" && strings.EqualFold(signatureAlias, identity) {
+				profileMatch = true
+			}
+		} else if arn, ok := isSigningProfileArn(identity); ok {
 			s := strings.Split(arn.Resource, "/")
-			if len(s) == 3 { // if profile arn
+			if strings.HasPrefix(arn.Resource, "/aliased-signing-profiles/") {
+				// Aliased resource ARN as trust anchor (matches signingProfileVersion for ALIAS_ONLY).
+				if strings.EqualFold(signatureIdentity, identity) {
+					profileMatch = true
+				}
+			} else if len(s) == 3 { // if profile arn
 				lastIndex := strings.LastIndex(signatureIdentity, "/")
 				if lastIndex != -1 && strings.EqualFold(signatureIdentity[:lastIndex], identity) {
 					profileMatch = true
@@ -162,11 +173,11 @@ func validateTrustedIdentity(request *plugin.VerifySignatureRequest, response *p
 					profileMatch = true
 				}
 			}
-			if profileMatch {
-				result.Success = true
-				result.Reason = fmt.Sprintf(reasonTrustedIdentitySuccessFmt, identity)
-				break
-			}
+		}
+		if profileMatch {
+			result.Success = true
+			result.Reason = fmt.Sprintf(reasonTrustedIdentitySuccessFmt, identity)
+			break
 		}
 	}
 
@@ -176,10 +187,20 @@ func validateTrustedIdentity(request *plugin.VerifySignatureRequest, response *p
 
 func isSigningProfileArn(s string) (arn.ARN, bool) {
 	if a, err := arn.Parse(s); err == nil {
-		return a, a.Service == "signer" && strings.HasPrefix(a.Resource, "/signing-profiles/")
+		return a, a.Service == "signer" &&
+			(strings.HasPrefix(a.Resource, "/signing-profiles/") ||
+				strings.HasPrefix(a.Resource, "/aliased-signing-profiles/"))
 	}
 
 	return arn.ARN{}, false
+}
+
+func isAliasArn(s string) bool {
+	if a, err := arn.Parse(s); err == nil {
+		return a.Service == "signer" && strings.HasPrefix(a.Resource, "/aliases/")
+	}
+
+	return false
 }
 
 func getValueAsString(m map[string]interface{}, k string) (string, error) {
